@@ -1,12 +1,18 @@
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDxxx_YOUR_API_KEY_HERE",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "your-messaging-sender-id",
-    appId: "1:your-app-id:web:your-web-app-id"
+    apiKey: "AIzaSyDVavo9JjW3HmmTU2U78w5w6FJPTiuIipo",
+    authDomain: "personal-call-659a4.firebaseapp.com",
+    databaseURL: "https://personal-call-659a4-default-rtdb.firebaseio.com",
+    projectId: "personal-call-659a4",
+    storageBucket: "personal-call-659a4.firebasestorage.app",
+    messagingSenderId: "855478489325",
+    appId: "1:855478489325:web:3df677bfc5cb5c2e5efce4",
+    measurementId: "G-K4CV4TGZJN"
 };
+
+// ZEGO Configuration
+const ZEGO_APP_ID = 2112042448;
+const ZEGO_SERVER_SECRET = ""; // Will be set dynamically
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
@@ -108,7 +114,7 @@ async function createUserProfile(name, photoURL = null) {
             updatedAt: new Date(),
             lastSeen: new Date(),
             isOnline: true,
-            status: 'Hey there! I am using ChatHub'
+            status: 'Hey there! I am using WhatsApp Telegram Chat App'
         };
 
         await userRef.set(userData);
@@ -283,6 +289,26 @@ function showNotification(title, options = {}) {
     }
 }
 
+// ZEGO Token Generation (Client-side)
+async function generateZEGOToken(userId, userName) {
+    try {
+        // For development/testing, use ZEGO client SDK directly
+        // In production, implement server-side token generation
+        console.log('ZEGO Token would be generated for user:', userId);
+        
+        // Placeholder - actual implementation requires backend
+        return {
+            token: `demo-token-${userId}`,
+            appId: ZEGO_APP_ID,
+            userId: userId,
+            userName: userName
+        };
+    } catch (error) {
+        console.error('Error generating ZEGO token:', error);
+        throw error;
+    }
+}
+
 // Export for use in other files
 window.firebaseAuth = {
     sendOTP,
@@ -294,5 +320,7 @@ window.firebaseAuth = {
     uploadImage,
     setOnlineStatus,
     requestNotificationPermission,
-    showNotification
+    showNotification,
+    generateZEGOToken,
+    ZEGO_APP_ID
 };
