@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow users to read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth.uid == userId;
+    }
+
+    // Allow users to manage their contacts
+    match /contacts/{document=**} {
+      allow read, write: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // Allow users to access chats they're part of
+    match /chats/{chatId} {
+      allow read, write: if request.auth != null && request.auth.uid in resource.data.participants;
+      
+      match /messages/{messageId} {
+        allow read, write: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+      }
+    }
+
+    // Allow users to access groups they're part of
+    match /groups/{groupId} {
+      allow read, write: if request.auth != null && request.auth.uid in resource.data.members;
+      
+      match /messages/{messageId} {
+        allow read, write: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.members;
+      }
+    }
+
+    // Allow users to manage typing status in chats they're part of
+    match /typing/{chatId} {
+      allow read: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+      allow write: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+    }
+
+    // Allow users to see call records they're part of
+    match /calls/{callId} {
+      allow read: if request.auth != null && (request.auth.uid == resource.data.callerId || request.auth.uid == resource.data.calleeId);
+      allow write: if request.auth != null && (request.auth.uid == resource.data.callerId || request.auth.uid == resource.data.calleeId);
+    }
+
+    // Allow notifications for the user
+    match /notifications/{notificationId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+  }
+}
