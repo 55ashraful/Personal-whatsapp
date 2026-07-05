@@ -11,35 +11,51 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+// Services - এদেরকে window অবজেক্টে রাখা হয়েছে যাতে অন্য ফাইল (database.js) এদের খুঁজে পায়
+window.auth = firebase.auth();
+window.db = firebase.firestore();
+window.storage = firebase.storage();
+
+// শর্টকাট রেফারেন্স (এই ফাইলের ভেতর ব্যবহারের জন্য)
+const auth = window.auth;
+const db = window.db;
 
 // Global Variables
-let currentUser = null;
-let currentUserData = null;
+window.currentUser = null;
+window.currentUserData = null;
 
 // Listen to Auth State (এই ফাংশনটি লোডিং স্ক্রিন সরাবে)
 auth.onAuthStateChanged(async (user) => {
     console.log('Auth state changed:', user ? user.uid : 'No user');
     try {
         if (user) {
-            currentUser = user;
+            window.currentUser = user;
             const userData = await getUserProfile(user.uid);
             if (userData) {
-                currentUserData = userData;
-                if (typeof window.initializeApp === 'function') window.initializeApp();
+                window.currentUserData = userData;
+                if (typeof window.initializeApp === 'function') {
+                    window.initializeApp();
+                }
             } else {
-                if (typeof window.showProfileSetup === 'function') window.showProfileSetup();
+                if (typeof window.showProfileSetup === 'function') {
+                    window.showProfileSetup();
+                }
             }
         } else {
-            if (typeof window.showAuthUI === 'function') window.showAuthUI();
+            if (typeof window.showAuthUI === 'function') {
+                window.showAuthUI();
+            }
         }
     } catch (error) {
         console.error("Auth process error:", error);
-        if (typeof window.showAuthUI === 'function') window.showAuthUI();
+        // এরর হলেও যেন ইউজার লগইন স্ক্রিন দেখতে পায়
+        if (typeof window.showAuthUI === 'function') {
+            window.showAuthUI();
+        }
     }
 });
 
@@ -48,7 +64,10 @@ async function getUserProfile(uid) {
     try {
         const doc = await db.collection('users').doc(uid).get();
         return doc.exists ? doc.data() : null;
-    } catch (e) { return null; }
+    } catch (e) { 
+        console.error("Error fetching profile:", e);
+        return null; 
+    }
 }
 
 // reCAPTCHA Verifier
@@ -63,7 +82,11 @@ window.setupRecaptcha = function() {
 // Messaging Safe Initialization
 try {
     const messaging = firebase.messaging();
-    // নোটিফিকেশন কোড এখানে থাকতে পারে, কিন্তু ট্রাই-ক্যাচ এর ভেতর
 } catch (e) {
-    console.warn("Messaging not supported.");
+    console.warn("Messaging not supported in this browser.");
 }
+
+// Global Export
+window.firebaseAuth = {
+    getUserProfile
+};
