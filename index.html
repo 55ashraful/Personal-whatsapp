@@ -504,19 +504,15 @@
         }
     </script>
 
-    <!-- Firebase (Compat Version) -->
+ <!-- Firebase SDK (Compat Version) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js"></script>
 
-    <!-- WebRTC -->
-    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-
-    <!-- আপনার ফাইলগুলো এই সিরিয়ালে রাখুন -->
-    <script src="app.js"></script>
-    <script src="firebase.js"></script>
+    <!-- আপনার ফাইলগুলো সিরিয়াল অনুযায়ী (খুবই গুরুত্বপূর্ণ) -->
+    <script src="app.js"></script> <!-- ১. ফাংশনগুলো আগে -->
+    <script src="firebase.js"></script> <!-- ২. ফায়ারবেস লজিক পরে -->
     <script src="database.js"></script>
     <script src="profile.js"></script>
     <script src="chat.js"></script>
